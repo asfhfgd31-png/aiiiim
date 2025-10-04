@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agreement 2.0 - Absolute Final Version</title>
+    <!-- Fonts and Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #2980b9;
+            --danger-color: #c0392b;
+            --success-color: #27ae60;
+            --text-color: #333;
+            --border-color: #bdc3c7;
+            --light-bg: #f5f7fa;
+            --white: #ffffff;
+            --highlight-bg: rgba(255, 215, 0, 0.4);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Noto Nastaliq Urdu', serif;
+            line-height: 2.0;
+            background: var(--light-bg);
+            color: var(--text-color);
+            padding: 10px;
+            direction: rtl;
+        }
+
+        .container { max-width: 1100px; margin: 10px auto; background: var(--white); border-radius: 15px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1); overflow: hidden; border: 1px solid #e0e0e0; }
+
+        .header { background: linear-gradient(135deg, var(--secondary-color), var(--primary-color)); color: var(--white); padding: 30px 20px; text-align: center; }
+        .header h1 { font-size: clamp(28px, 5vw, 36px); font-weight: 700; }
+        .header h3 { font-size: clamp(22px, 4vw, 28px); margin-bottom: 15px; font-weight: 600; color: var(--white); }
+        .header .quran-verse { font-size: clamp(16px, 3.5vw, 18px); margin-top: 15px; line-height: 1.8; opacity: 0.9; }
+
+        .content { padding: clamp(15px, 4vw, 40px); }
+
+        .section { margin-bottom: 35px; padding-bottom: 25px; border-bottom: 1px dashed var(--border-color); }
+        .section:last-child { border-bottom: none; }
+
+        .section-title { color: #000; font-weight: 600; font-size: clamp(22px, 5vw, 26px); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 3px solid var(--accent-color); display: inline-block; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; direction: ltr; }
+
+        .subsection-title { color: #c0392b; font-size: clamp(18px, 4vw, 20px); margin-bottom: 15px; font-weight: 600; }
+        p, .list li { font-size: clamp(16px, 3.5vw, 18px); text-align: justify; margin-bottom: 15px; }
+        .list { list-style: none; padding-right: 25px; margin: 15px 0; }
+        .list li::before { content: "•"; color: var(--accent-color); font-weight: bold; display: inline-block; width: 1em; margin-right: -1em; margin-left: 10px; }
+        strong { color: var(--primary-color); }
+        .note { background: #eaf5ff; padding: 15px; border-radius: 8px; margin: 15px 0; border-right: 5px solid var(--accent-color); }
+        .quran-highlight { background: #fef9e7; padding: 20px; border-radius: 12px; text-align: center; margin: 25px 0; font-size: clamp(18px, 4vw, 20px); color: #7d6608; border: 1px solid #f1c40f; line-height: 2.0; }
+
+        .table-container { overflow-x: auto; }
+        .financial-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 16px; }
+        .financial-table th, .financial-table td { padding: 12px 15px; text-align: right; border: 1px solid #ddd; }
+        .financial-table thead { background-color: var(--secondary-color); color: var(--white); }
+        .financial-table tbody tr:nth-of-type(even) { background-color: #f9f9f9; }
+        .financial-table tfoot { font-weight: bold; background-color: #f0f0f0; }
+
+        .party-section { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+        .party-box { padding: 20px; border: 1px solid var(--border-color); border-radius: 10px; background: var(--light-bg); text-align: center; display: flex; flex-direction: column; }
+        .party-title { font-size: 20px; font-weight: 700; color: var(--primary-color); margin-bottom: 15px; }
+        .party-label { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-weight: bold; direction: ltr; unicode-bidi: embed; }
+        .english-name { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 16px; color: #555; direction: ltr; display: block; margin-top: -10px; }
+        .uploader-wrapper { width: 100%; min-height: 180px; border: 2px dashed var(--border-color); border-radius: 10px; margin: 15px 0; display: flex; align-items: center; justify-content: center; flex-direction: column; position: relative; background: #e9ecef; cursor: pointer; overflow: hidden; flex-grow: 1; }
+        .uploader-wrapper:hover { border-color: var(--accent-color); }
+        .uploader-placeholder { color: #6c757d; text-align: center; }
+        .uploader-placeholder i { font-size: 3rem; }
+        .preview-image { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; background: var(--white); }
+        .input-group { margin-top: 15px; }
+        .input-group label { display: block; margin-bottom: 5px; font-weight: 600; text-align: right; }
+        .input-group input { width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 5px; text-align: right; }
+        .signature-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 15px; }
+        .btn { padding: 8px 12px; border: none; border-radius: 5px; cursor: pointer; background-color: var(--secondary-color); color: white; font-family: inherit; font-size: 14px; transition: background-color 0.3s; flex-grow: 1; }
+        .btn-use-id { background-color: #16a085; }
+        .btn-draw { background-color: var(--success-color); }
+        .btn-upload { background-color: var(--accent-color); }
+        .btn:hover { opacity: 0.9; }
+
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 1000; }
+        .modal-content { background: var(--white); padding: 20px; border-radius: 10px; width: 90%; max-width: 600px; }
+        #signature-pad { border: 1px solid var(--border-color); cursor: crosshair; display: block; width: 100%; height: 200px; }
+        .modal-actions { margin-top: 15px; text-align: center; display: flex; gap: 10px; }
+        #cropper-modal .modal-content { max-width: 80vw; max-height: 90vh; }
+        #image-to-crop { max-width: 100%; max-height: 70vh; display: block; }
+        #loader { z-index: 1001; }
+        #loader .modal-content { color: var(--white); background: var(--primary-color); text-align: center; font-size: 20px; padding: 40px; }
+
+        .actions-container { text-align: center; margin: 40px 0 20px; display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; }
+        .action-btn { background-color: var(--danger-color); font-size: 16px; padding: 10px 20px; font-family: 'Segoe UI', sans-serif; }
+        .action-btn.normal { background-color: #7f8c8d; }
+        .action-btn.pdf { background-color: #d35400; }
+        .action-btn i { margin-left: 8px; }
+
+        .footer { text-align: center; padding: 20px; background: var(--primary-color); color: white; }
+        .prepared-by-note { text-align: center; font-size: 12px; color: #777; margin-top: 30px; direction: ltr; font-style: italic; }
+
+        .highlight-text { background-color: var(--highlight-bg); padding: 0 6px; border-radius: 4px; }
+
+        .no-break { page-break-inside: avoid; break-inside: avoid; -webkit-column-break-inside: avoid; }
+
+        @media print {
+            body { padding: 0; background: var(--white); color: #000; }
+            .container { box-shadow: none; border: none; margin: 0; max-width: 100%; border-radius: 0; }
+            .no-print { display: none !important; }
+            .party-box, .uploader-wrapper { border-color: #ccc; }
+            .header { background: #f0f0f0 !important; color: #000 !important; }
+            .header h1, .header h3 { color: #000; }
+            .highlight-text { background-color: transparent !important; padding: 0; border: none; color: inherit; }
+            body.print-color .header { background: linear-gradient(135deg, var(--secondary-color), var(--primary-color)) !important; color: var(--white) !important; }
+            body.print-color .header h1, body.print-color .header h3 { color: var(--white); }
+            body.print-color .highlight-text { background-color: var(--highlight-bg) !important; }
+            body.print-color .note, body.print-color .quran-highlight, body.print-color .financial-table thead { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h3>بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</h3>
+            <h1>Agreement 2.0</h1>
+            <div class="quran-verse">
+                يَا أَيُّهَا الَّذِينَ آمَنُوا أَوْفُوا بِالْعُقُودِ<br>
+                (اے ایمان والو! اپنے عہدوں کو پورا کرو۔) - (سورۃ المائدہ: 1)
+            </div>
+        </header>
+
+        <main class="content">
+            <section class="section">
+                <p><strong>اللہ رب العزت کو حاضر و ناظر جان کر اور اسے گواہ بنا کر</strong>، یہ معاہدہ <span class="party-label"><span lang="en" dir="ltr">First Person</span></span> (محمد قاسم / <span class="english-name" style="display:inline-block;">Muhammad Qasim</span>) اور <span class="party-label"><span lang="en" dir="ltr">Second Person</span></span> (ڈاکٹر نظیر احمد / <span class="english-name" style="display:inline-block;">Dr. Nazeer Ahmed</span>) کے مابین طے پا رہا ہے۔</p>
+            </section>
+
+            <section class="section">
+                <h2 class="section-title" style="font-family: 'Noto Nastaliq Urdu', serif;">پس منظر اور بنیاد</h2>
+                <p>فریقین کے مابین نو (9) ماہ قبل طے پانے والا پانچ (5) سالہ شراکت داری کا معاہدہ ختم ہو گیا، کیونکہ باہمی اعتماد ختم ہو جانے اور بنیادی اصولوں پر عملدرآمد ممکن نہ رہنے کی وجہ سے اُسے چلانا ناممکن ہو گیا تھا۔ سابقہ معاہدے کے خاتمے کے نتیجے میں <span lang="en" dir="ltr">First Person</span> کو ہونے والے مالیاتی اور ناقابلِ تلافی نقصان اور اہم وقت کے ضیاع کو حل کرنے کے لیے، <span lang="en" dir="ltr">Second Person</span> نے ایک نئے مالیاتی انتظام کی تجویز پیش کی۔ <span lang="en" dir="ltr">First Person</span> نے اس تجویز کو قبول کرنے کا فیصلہ کیا۔</p>
+                <div class="note">
+                    <p>یہ تحریر مورخہ <span class="highlight-text">1 اکتوبر 2025</span> کو ہونے والے زبانی فیصلوں کی حتمی توثیق ہے۔ ایک سابقہ معاہدہ موجود ہے اور درخواست پر علیحدہ پی ڈی ایف کے طور پر دستیاب ہے؛ اس کے مندرجات ریکارڈ پر محفوظ ہیں۔</p>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2 class="section-title">Settlement Details</h2>
+
+                <div class="subsection">
+                    <h3 class="subsection-title">1. مالیت کا تعین:</h3>
+                    <div class="table-container">
+                        <table class="financial-table">
+                            <thead>
+                                <tr><th>تفصیل</th><th>تعداد/مقدار</th><th>قیمت فی عدد (روپے)</th><th>کل قابلِ واپسی مالیت (روپے)</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td data-label="تفصیل">کاپر وائر اور لیتھیم بیٹریز</td><td data-label="تعداد/مقدار">-</td><td data-label="قیمت فی عدد">-</td><td data-label="کل مالیت">21,000</td></tr>
+                                <tr><td data-label="تفصیل">کمپیوٹر پاور سپلائی</td><td data-label="تعداد/مقدار">34 عدد</td><td data-label="قیمت فی عدد">-</td><td data-label="کل مالیت">28,900</td></tr>
+                                <tr><td data-label="تفصیل">لیپ ٹاپ میں فریقِ دوم کا حصہ</td><td data-label="تعداد/مقدار">1 عدد</td><td data-label="قیمت فی عدد">-</td><td data-label="کل مالیت">20,000</td></tr>
+                                <tr><td data-label="تفصیل">تین عدد نئے لیپ ٹاپس</td><td data-label="تعداد/مقدار">3 عدد</td><td data-label="قیمت فی عدد">-</td><td data-label="کل مالیت">88,000</td></tr>
+                            </tbody>
+                            <tfoot>
+                                <tr><td colspan="3">کل قابلِ واپسی رقم</td><td><span class="highlight-text">157,900</span></td></tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <div class="note">
+                        <p><strong>مالیت اور سامان کے استعمال کی تفصیلی وضاحت:</strong></p>
+                        <ul class="list">
+                            <li>ایک لیپ ٹاپ کی کل قیمت 24,500 روپے تھی، جس میں <span lang="en" dir="ltr">Second Person</span> کا حصہ <span class="highlight-text">20,000</span> روپے تھا جو قابلِ واپسی ہے۔</li>
+                            <li>تین نئے لیپ ٹاپس کی مجموعی قیمت 88,200 روپے تھی (ایک <span class="highlight-text">35,200</span>، دوسرا <span class="highlight-text">26,000</span>، تیسرا <span class="highlight-text">27,000</span>)۔ اس میں سے 200 روپے ناقابلِ واپسی ہیں، لہٰذا قابلِ واپسی رقم 88,000 روپے ہے۔</li>
+                            <li>یہ واضح رہے کہ 20,000 روپے حصے والا لیپ ٹاپ، کاپر وائر، اور کمپیوٹر سپلائیز تقریباً <strong>چار ماہ قبل</strong> خریدے گئے تھے، جبکہ تین نئے لیپ ٹاپس تقریباً <strong>دس دن قبل</strong> خریدے گئے ہیں۔</li>
+                            <li>مذکورہ بالا اثاثوں کی ملکیت محمد قاسم کو منتقل کر دی گئی ہے۔ ان اثاثوں کی قانونی فروخت سے حاصل ہونے والی آمدنی واجب الادا رقوم کے لیے استعمال کی جا سکتی ہے، بغیر کسی واضح یا مضمر گارنٹی کے کہ نقصانات کی مکمل وصولی ہو گی۔</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <h3 class="subsection-title">2. Ownership of Assets</h3>
+                    <p>اس معاہدے کے تحت مذکورہ بالا تمام اثاثے فوری طور پر محمد قاسم کی مکمل اور حتمی ملکیت میں دے دیے گئے ہیں۔</p>
+                </div>
+
+                <div class="subsection">
+                    <h3 class="subsection-title">3. Repayment Schedule</h3>
+                    <div class="table-container">
+                        <table class="financial-table">
+                            <thead><tr><th>قسط</th><th>رقم (روپے)</th><th>مہلت</th><th>دنوں کی تعداد</th><th>آخری تاریخ</th></tr></thead>
+                            <tbody>
+                                <tr><td>پہلی</td><td><span class="highlight-text">20,000</span></td><td>-</td><td>70 دن</td><td id="first-due-date" data-iso-date=""></td></tr>
+                                <tr><td>دوسری</td><td><span class="highlight-text">137,900</span></td><td>9 مہینے</td><td id="second-due-days"></td><td id="second-due-date" data-iso-date=""></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="note"><strong>وضاحت:</strong> یہ معاہدہ <span class="highlight-text">2 اکتوبر 2025، شام 4 بجے</span> سے نافذ العمل ہے۔ اوپر دی گئی تاریخیں ادائیگی کی <strong>حتمی اور آخری حد</strong> ہیں۔ <span lang="en" dir="ltr">First Person</span> اس بات کے پابند ہیں کہ وہ ہر حال میں یہ رقم مقررہ مدت کے اندر ادا کریں گے، چاہے اس کے لیے انہیں ذاتی نقصان ہی کیوں نہ اٹھانا پڑے۔</p>
+                </div>
+
+                <div class="subsection">
+                    <h3 class="subsection-title">4. Payment Guarantee Mechanism</h3>
+                    <p><span lang="en" dir="ltr">First Person</span> اس بات کا عہد کرتے ہیں کہ وہ اس رقم کی واپسی کو ہر حال میں یقینی بنانے کے لیے ایک مکمل <span class="highlight-text">شفاف لائحہ عمل (Transparent Mechanism)</span> ترتیب دیں گے۔ اس عمل کو مکمل طور پر شفاف رکھتے ہوئے جناب محمد وقاص عاجز کو تمام صورتحال سے آگاہ رکھا جائے گا تاکہ رقم کی واپسی ہر حال میں ممکن ہو، چاہے <span lang="en" dir="ltr">First Person</span> خود موجود نہ بھی ہوں۔</p>
+                </div>
+
+                <div class="subsection"><h3 class="subsection-title">5. Business Status</h3><p>یہ انتظام ایک تصفیہ ہے، نئی شراکت داری نہیں۔ اس رقم سے کیے جانے والے کاروبار کے تمام نفع و نقصان کے واحد مالک محمد قاسم ہوں گے۔</p></div>
+            </section>
+
+            <div class="quran-highlight"><b>قَالَ رَسُولُ اللَّهِ صلى الله عليه وسلم ‏"‏ الْمُسْلِمُونَ عَلَى شُرُوطِهِمْ ‏"‏</b><br>رسول اللہ صلی اللہ علیہ وسلم نے فرمایا: ”مسلمان اپنی شرطوں پر قائم رہتے ہیں۔“<br>(سنن ابی داؤد: 3594، کتاب: فیصلے کا بیان، درجہ: صحیح)</div>
+
+            <section class="section">
+                <h2 class="section-title">Details of Parties</h2>
+                <div class="id-page no-break" data-no-split="true">
+                <div class="party-section">
+                    <div class="party-box"><div class="party-title"><span class="party-label"><span lang="en" dir="ltr">First Person</span></span><span class="english-name">Muhammad Qasim</span></div><label for="id-upload-1" class="uploader-wrapper"><div class="uploader-placeholder"><i class="fas fa-id-card"></i><p>شناختی کارڈ اپ لوڈ کریں</p><span id="status-1" style="font-size: 12px; color: green;"></span></div><img id="id-preview-1" class="preview-image" style="display:none;"></label><input type="file" id="id-upload-1" accept="image/*" class="file-input" data-preview="id-preview-1" data-cnic-input="cnic-1" data-status="status-1" data-target-id="1" style="display:none;"><div class="input-group"><label for="cnic-1">شناختی کارڈ نمبر:</label><input type="text" id="cnic-1" placeholder="xxxxx-xxxxxxx-x"></div><div class="input-group"><label>دستخط:</label><div class="uploader-wrapper"><div class="uploader-placeholder"><i class="fas fa-file-signature"></i><p>دستخط شامل کریں</p></div><img id="sig-preview-1" class="preview-image" style="display:none;"></div><div class="signature-actions no-print"><button class="btn btn-use-id" data-target="1">کارڈ سے دستخط لیں</button><button class="btn btn-draw" data-target="1">خود بنائیں</button><label for="sig-upload-1" class="btn btn-upload">اپ لوڈ کریں</label><input type="file" id="sig-upload-1" accept="image/*" class="file-input" data-preview="sig-preview-1" style="display:none;"></div></div></div>
+                    <div class="party-box"><div class="party-title"><span class="party-label"><span lang="en" dir="ltr">Second Person</span></span><span class="english-name">Dr. Nazeer Ahmed</span></div><label for="id-upload-2" class="uploader-wrapper"><div class="uploader-placeholder"><i class="fas fa-id-card"></i><p>شناختی کارڈ اپ لوڈ کریں</p><span id="status-2" style="font-size: 12px; color: green;"></span></div><img id="id-preview-2" class="preview-image" style="display:none;"></label><input type="file" id="id-upload-2" accept="image/*" class="file-input" data-preview="id-preview-2" data-cnic-input="cnic-2" data-status="status-2" data-target-id="2" style="display:none;"><div class="input-group"><label for="cnic-2">شناختی کارڈ نمبر:</label><input type="text" id="cnic-2" placeholder="xxxxx-xxxxxxx-x"></div><div class="input-group"><label>دستخط:</label><div class="uploader-wrapper"><div class="uploader-placeholder"><i class="fas fa-file-signature"></i><p>دستخط شامل کریں</p></div><img id="sig-preview-2" class="preview-image" style="display:none;"></div><div class="signature-actions no-print"><button class="btn btn-use-id" data-target="2">کارڈ سے دستخط لیں</button><button class="btn btn-draw" data-target="2">خود بنائیں</button><label for="sig-upload-2" class="btn btn-upload">اپ لوڈ کریں</label><input type="file" id="sig-upload-2" accept="image/*" class="file-input" data-preview="sig-preview-2" style="display:none;"></div></div></div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
